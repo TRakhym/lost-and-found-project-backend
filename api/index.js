@@ -12,7 +12,7 @@ App.use('/api/auth', Auth)
 
 
 function showMessage(request, response){
-  response.send('Server is Working')
+  response.send('Server is Working on: '+process.env.PORT)
 }
 App.get('/', showMessage);
 

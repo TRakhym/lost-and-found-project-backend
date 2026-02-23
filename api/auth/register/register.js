@@ -14,9 +14,8 @@ async function register(request, response){
                 }
             });
         
-        response.json(user)
+        response.json({ message: 'User registered successfully' });
     } catch(error){
-        console.error('Register error:', error);
         response.status(409).json({ error: 'User already exists' });
     }
 };
