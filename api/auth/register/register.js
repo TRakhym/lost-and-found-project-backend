@@ -6,6 +6,11 @@ async function register(request, response){
     try{
         const { email, password, name } = request.body;
 
+        const reliability = reliabilityCheck(password)
+        if (reliability) {
+            return res.status(400).json({ message: passwordError })
+        }
+
         const cryptedPassword = await bcrypt.hash(password, 10);
 
         const user = await prisma.user.create({
@@ -30,5 +35,21 @@ async function register(request, response){
         response.status(409).json({ error: 'User already exists' });
     }
 };
+
+function reliabilityCheck(yourPassword){
+    if(!password || password.length < 8){
+        return 'Password should have at least 8 symbols'
+    }
+    if(!/[A-Z]/.test(password)){
+        return 'Password should have at least one upper letter'
+    }
+    if(!/[a-z]/.test(password)){
+        return 'Password should have at least one lower letter'
+    }
+    if(!/\d/.test(password)){
+        return 'Password should have at least one digit'
+    }
+    return null
+}
 
 module.exports = register;
