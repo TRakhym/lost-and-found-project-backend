@@ -1,6 +1,6 @@
 const prisma = require('../../lib/prisma');
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken')
+const JWT = require('jsonwebtoken')
 
 async function login(request, response){
     const { email, password } = request.body;
@@ -19,13 +19,16 @@ async function login(request, response){
         return response.status(400).json({ error: 'Invalid credentials'})
     }
 
-    const token = jwt.sign(
+    const token = JWT.sign(
         { email: user.email },
         process.env.JWT_SECRET, 
         { expiresIn: '1h'}
     );
 
-    response.json({ token })
+    response.json({ 
+        token,
+        user: { id: user.id, email: user.email, name: user.name }
+    })
 }
 
 module.exports = login;

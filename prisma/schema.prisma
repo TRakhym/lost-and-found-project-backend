@@ -7,14 +7,16 @@ datasource db {
   provider = "postgresql"
 }
 
-model User {
-  id        Int      @id @default(autoincrement())
+model User{
+  id        String   @id @default(cuid())
   email     String   @unique
   password  String
-  name      String?
-  avatar    String?
+  name      String
+  phone     String?
+  avatarUrl String?
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
+  
   @@map("users")
 }
