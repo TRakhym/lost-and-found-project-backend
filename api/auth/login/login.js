@@ -20,7 +20,7 @@ async function login(request, response){
     }
 
     const token = JWT.sign(
-        { email: user.email },
+        { id: user.id, email: user.email },
         process.env.JWT_SECRET, 
         { expiresIn: '1h'}
     );

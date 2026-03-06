@@ -6,9 +6,14 @@ async function register(request, response){
     try{
         const { email, password, name } = request.body;
 
+        const existingUser = await prisma.user.findUnique({ where: { email } });
+        if (existingUser) {
+            return response.status(409).json({ error:'User already exists'});
+        }
+
         const reliability = reliabilityCheck(password)
         if (reliability) {
-            return res.status(400).json({ message: passwordError })
+            return response.status(400).json({ message: reliability })
         }
 
         const cryptedPassword = await bcrypt.hash(password, 10);
@@ -32,11 +37,12 @@ async function register(request, response){
             user: { id: user.id, email: user.email, name: user.name }
         });
     } catch(error){
-        response.status(409).json({ error: 'User already exists' });
+        console.error('Register error:', error);
+        response.status(500).json({ error: 'Internal server error'});
     }
 };
 
-function reliabilityCheck(yourPassword){
+function reliabilityCheck(password){
     if(!password || password.length < 8){
         return 'Password should have at least 8 symbols'
     }
