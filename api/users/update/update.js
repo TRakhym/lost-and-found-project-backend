@@ -1,6 +1,5 @@
 const prisma = require('../../lib/prisma');
 const cloudinary = require('../../lib/cloudinary')
-const fs = require('fs')
 
 async function updateProfile(request, response){
     try {
@@ -9,21 +8,34 @@ async function updateProfile(request, response){
 
         const updateData = {}
 
-        if (name) updateData.name = name
-        if (phone) updateData.phone = phone
+        if (name){
+            updateData.name = name
+        }
+        if (phone){
+            updateData.phone = phone
+        }
 
         if (request.file) {
-            const uploadResult = await cloudinary.uploader.upload(request.file.path, {
-                folder: 'lostfound/avatars',
-                public_id: `user_${userId}`,
-                overwrite: true,
-                invalidate: true,
-                transformation: [{ width: 400, height: 400, crop: 'fill' }]
+            const uploadResult = await new Promise((ok, bad) => {
+                cloudinary.uploader.upload_stream(
+                    {
+                        folder: 'lostfound/avatars',
+                        public_id: `user_${userId}`,
+                        overwrite: true,
+                        invalidate: true,
+                        transformation: [
+                            { 
+                                width: 400,
+                                height: 400,
+                                crop: 'fill'
+                            }
+                        ]
+                    },
+                    (err, res) => err ? bad(err) : ok(res)
+                ).end(request.file.buffer)
             })
 
             updateData.avatarUrl = uploadResult.secure_url
-
-            fs.unlink(request.file.path, () => {})
         }
 
         const updatedUser = await prisma.user.update({
@@ -39,8 +51,8 @@ async function updateProfile(request, response){
 
         response.json(updatedUser)
     } catch (error) {
-        console.error(error)
-        response.status(500).json({ error: 'Something went wrong during update' })
+        console.log("Users - Update:", error)
+        response.status(500)
     }
 }
 

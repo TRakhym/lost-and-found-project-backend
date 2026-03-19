@@ -1,15 +1,7 @@
 const multer = require('multer')
 const path = require('path')
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, 'cache/'),
-
-  filename: (req, file, cb) => {
-    const unique = `${Date.now()}-${Math.round(Math.random() * 10000)}`
-    const ext = path.extname(file.originalname)
-    cb(null, `${file.fieldname}-${unique}${ext}`)
-  }
-})
+const storage = multer.memoryStorage()
 
 const fileFilter = (req, file, cb) => {
   const imgFormats = /jpeg|jpg|png/
