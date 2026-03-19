@@ -4,6 +4,7 @@ const Express = require('express')
 const Auth = require('./auth/auth')
 const Users = require('./users/users')
 const Items = require('./items/items')
+const Claims = require('./claims/claims')
 
 const { shield } = require('./functions/middleware')
 
@@ -16,6 +17,7 @@ App.use(Express.urlencoded({ extended: true }))
 App.use('/api/auth', Auth)
 App.use('/api/users', shield, Users)
 App.use('/api/items', shield, Items)
+App.use('/api/claims', shield, Claims)
 
 
 function showMessage(request, response){
