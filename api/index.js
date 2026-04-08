@@ -1,4 +1,5 @@
 require('dotenv').config()
+const Сors = require("cors");
 const Express = require('express')
 
 const Auth = require('./auth/auth')
@@ -9,6 +10,8 @@ const Claims = require('./claims/claims')
 const { shield } = require('./functions/middleware')
 
 const App = Express()
+
+App.use(Сors());
 
 App.use(Express.json())
 App.use(Express.urlencoded({ extended: true }))
